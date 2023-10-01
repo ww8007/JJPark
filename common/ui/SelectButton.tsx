@@ -100,7 +100,8 @@ export default SelectButton;
 
 const styles = StyleSheet.create({
 	container: {
-		alignItems: "center"
+		alignItems: "center",
+		marginBottom: 10
 	},
 	innerContainer: {
 		flexDirection: "row",
