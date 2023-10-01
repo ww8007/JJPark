@@ -1,7 +1,7 @@
 export default {
 	light: {
 		text: "#fff",
-		background: "#E1E1F4",
+		background: "#ffffff",
 		primary: "#5D5FEF",
 		lightPrimary: "#7678E1",
 		buttonGreen: "#7678E1",
