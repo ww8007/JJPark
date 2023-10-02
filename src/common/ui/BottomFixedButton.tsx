@@ -3,6 +3,7 @@ import React from "react";
 import type { StyleProp, ViewStyle } from "react-native";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import Colors from "../../constants/Colors";
+import { Text } from "./Text";
 
 type TouchableOpacityProps = ComponentProps<typeof TouchableOpacity>;
 export type TouchableViewProps = TouchableOpacityProps & {
@@ -15,8 +16,18 @@ const BottomFixedButton = ({
 }: TouchableViewProps) => {
 	return (
 		<View style={styles.bottomFixedWrapper}>
-			<TouchableOpacity style={styles.bottomFixedButton} {...touchableProps}>
-				<View style={[viewStyle]}>{children}</View>
+			<TouchableOpacity
+				style={[
+					styles.bottomFixedButton,
+					touchableProps.disabled && styles.disabled
+				]}
+				{...touchableProps}
+			>
+				<View style={[viewStyle]}>
+					<Text bold fontSize={16} color='white'>
+						{children}
+					</Text>
+				</View>
 			</TouchableOpacity>
 		</View>
 	);
@@ -43,5 +54,8 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		backgroundColor: Colors.light.lightPrimary,
 		borderRadius: 10
+	},
+	disabled: {
+		backgroundColor: Colors.light.grey600
 	}
 });

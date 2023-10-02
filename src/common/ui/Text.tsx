@@ -1,18 +1,28 @@
 import type { ComponentProps, FC } from "react";
 import React from "react";
 import { Text as RNText, StyleSheet } from "react-native";
-import Colors from "../../constants/Colors";
+import Colors, { ColorsType } from "../../constants/Colors";
 export type TextProps = {
 	bold?: boolean;
+	fontSize?: number;
+	color?: ColorsType;
 } & ComponentProps<typeof RNText>;
 
-export const Text: FC<TextProps> = ({ bold = false, style, ...props }) => {
+export const Text: FC<TextProps> = ({
+	bold = false,
+	fontSize,
+	style,
+	color = "black",
+	...props
+}) => {
 	return (
 		<RNText
 			style={[
 				styles.text,
 				{
-					fontFamily: bold ? "NanumSquareBold" : "NanumSquareRound"
+					color: Colors.light[color],
+					fontFamily: bold ? "NanumSquareBold" : "NanumSquareRound",
+					fontSize: fontSize
 				},
 				style
 			]}
