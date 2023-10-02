@@ -15,7 +15,7 @@ const _TextInput: ForwardRefRenderFunction<RNTextInput, TextInputProps> = (
 			ref={ref}
 			style={[
 				{
-					color: Colors.light.white,
+					color: Colors.light.black,
 					borderColor: Colors.light.grey400,
 					backgroundColor: Colors.light.white
 				},

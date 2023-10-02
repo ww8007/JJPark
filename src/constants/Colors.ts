@@ -1,4 +1,4 @@
-export default {
+const Colors = {
 	light: {
 		text: "#fff",
 		background: "#ffffff",
@@ -18,3 +18,6 @@ export default {
 		yellow: "#FFC107"
 	}
 };
+
+export default Colors;
+export type ColorsType = keyof typeof Colors.light;

@@ -3,8 +3,8 @@ import { useEffect } from "react";
 
 const useSettingFont = () => {
 	const [loaded, error] = useFonts({
-		NanumSquareRound: require("../../assets/fonts/NanumSquareRoundR.ttf"),
-		NanumSquareBold: require("../../assets/fonts/NanumSquareRoundB.ttf")
+		NanumSquareRound: require("../../../assets/fonts/NanumSquareRoundR.ttf"),
+		NanumSquareBold: require("../../../assets/fonts/NanumSquareRoundB.ttf")
 	});
 
 	useEffect(() => {

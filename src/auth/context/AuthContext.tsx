@@ -8,6 +8,7 @@ import {
 	useReducer,
 	useState
 } from "react";
+import firestore from "@react-native-firebase/firestore";
 
 export type ActionMapType<M extends { [index: string]: any }> = {
 	[Key in keyof M]: M[Key] extends undefined
@@ -90,7 +91,19 @@ export function AuthProvider({ children }: AuthProviderProps) {
 			if (!user) router.push("/login");
 			const token = await user?.getIdToken();
 			setToken(token ?? undefined);
-			if (user) router.push("/");
+			if (user) {
+				firestore()
+					.collection("users")
+					.where("uid", "==", user.uid)
+					.get()
+					.then((querySnapshot) => {
+						if (querySnapshot.empty) {
+							router.push("/register");
+						} else {
+							router.push("/");
+						}
+					});
+			}
 		});
 	}, [auth()]);
 
