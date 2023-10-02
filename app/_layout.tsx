@@ -6,8 +6,8 @@ import {
 } from "@react-navigation/native";
 import { SplashScreen, Stack } from "expo-router";
 import { useColorScheme } from "react-native";
-import useSettingFont from "../common/hooks/useFonts";
-import { AuthProvider } from "../auth/context/AuthContext";
+import useSettingFont from "../src/common/hooks/useFonts";
+import { AuthProvider } from "../src/auth/context/AuthContext";
 import { useEffect } from "react";
 
 export {
@@ -55,6 +55,8 @@ function RootLayoutNav() {
 				<Stack screenOptions={{ headerShown: false }}>
 					<Stack.Screen name='login' options={{ headerShown: false }} />
 					<Stack.Screen name='email' options={{ animation: "flip" }} />
+					<Stack.Screen name='register' options={{ animation: "flip" }} />
+					<Stack.Screen name='setting' options={{ animation: "flip" }} />
 				</Stack>
 			</ThemeProvider>
 		</AuthProvider>
