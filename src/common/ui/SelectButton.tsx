@@ -1,14 +1,8 @@
-import React, { useRef } from "react";
-import {
-	View,
-	TouchableOpacity,
-	StyleSheet,
-	Animated,
-	Easing,
-	Dimensions
-} from "react-native";
+import React, { FC, useEffect, useRef } from "react";
+import { View, TouchableOpacity, StyleSheet, Dimensions } from "react-native";
 import Colors from "../../constants/Colors";
 import { Text } from "./Text";
+import Animated, { useSharedValue, withSpring } from "react-native-reanimated";
 
 interface Props {
 	firstText: string;
@@ -18,39 +12,32 @@ interface Props {
 	unsetSelect: () => void;
 }
 
-const SelectButton: React.FC<Props> = ({
+const SelectButton: FC<Props> = ({
 	firstText,
 	secondText,
 	isSelect,
 	setSelect,
 	unsetSelect
 }) => {
-	const translateX = new Animated.Value(0);
+	const translateX = useSharedValue(0);
 	const isInitialMount = useRef(true);
 	const deviceWidth = Dimensions.get("window").width;
 	const buttonWidth = deviceWidth / 2 - 30 - 20;
 
-	React.useEffect(() => {
+	useEffect(() => {
 		if (isInitialMount.current) {
 			isInitialMount.current = false;
 			return;
 		}
 
 		if (!isSelect) {
-			translateX.setValue(buttonWidth);
-			Animated.timing(translateX, {
-				toValue: 0,
-				duration: 300,
-				easing: Easing.inOut(Easing.ease),
-				useNativeDriver: true
-			}).start();
+			translateX.value = withSpring(0, {
+				damping: 99
+			});
 		} else {
-			Animated.timing(translateX, {
-				toValue: buttonWidth,
-				duration: 300,
-				easing: Easing.inOut(Easing.ease),
-				useNativeDriver: true
-			}).start();
+			translateX.value = withSpring(buttonWidth, {
+				damping: 99
+			});
 		}
 	}, [isSelect]);
 
