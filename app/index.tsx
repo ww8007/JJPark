@@ -1,9 +1,8 @@
 import { usePathname, useRouter } from "expo-router";
 import React from "react";
 
-import useAuthContext from "../auth/hooks/useAuthContext";
-import useFunnel from "../common/hooks/useFunnel";
-import 신청화면 from "../components/신청화면";
+import useFunnel from "../src/common/hooks/useFunnel";
+import 신청화면 from "../src/components/신청화면";
 
 const index = () => {
 	const { Funnel } = useFunnel({

@@ -8,6 +8,7 @@ import {
 	useReducer,
 	useState
 } from "react";
+import { getUser } from "../../user/db/user";
 
 export type ActionMapType<M extends { [index: string]: any }> = {
 	[Key in keyof M]: M[Key] extends undefined
@@ -90,7 +91,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
 			if (!user) router.push("/login");
 			const token = await user?.getIdToken();
 			setToken(token ?? undefined);
-			if (user) router.push("/");
+			if (user) {
+				const userInDB = await getUser(user.uid);
+				if (!userInDB) {
+					router.push("/register");
+				} else {
+					router.push("/");
+				}
+			}
 		});
 	}, [auth()]);
 

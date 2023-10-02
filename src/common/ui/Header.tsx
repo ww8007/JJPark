@@ -1,7 +1,8 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { ReactNode } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
+import { Text } from "./Text";
 import Colors from "../../constants/Colors";
 import { TouchableHighlight } from "react-native-gesture-handler";
 
@@ -32,10 +33,22 @@ const Header = ({
 						onPress={onClickBackButton}
 						underlayColor={Colors.light.background}
 					>
-						<MaterialIcons name='arrow-back' size={24} color='white' />
+						<MaterialIcons
+							name='arrow-back'
+							size={24}
+							color={Colors.light.black}
+						/>
 					</TouchableHighlight>
 				)}
-				{title && <Text>{title}</Text>}
+				{title && (
+					<Text
+						style={[showBackButton && styles.withBackTitle]}
+						bold
+						fontSize={22}
+					>
+						{title}
+					</Text>
+				)}
 			</View>
 			<View style={styles.rightButtonWrapper}>{rightButton}</View>
 		</View>
@@ -61,15 +74,16 @@ const styles = StyleSheet.create({
 	},
 	backButtonAndTitleWrapper: {
 		display: "flex",
-
 		height: 56,
 		alignItems: "center",
-
 		flexDirection: "row"
 	},
 	rightButtonWrapper: {
 		height: "100%",
 		display: "flex",
 		alignItems: "center"
+	},
+	withBackTitle: {
+		marginLeft: 10
 	}
 });
