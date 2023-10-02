@@ -5,12 +5,12 @@ import appleAuth, {
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { Image, Platform, StyleSheet, View } from "react-native";
-import useGetAppleAuth from "../auth/hooks/useGetAppleAuth";
-import Button from "../common/ui/Button";
-import GoggleLogo from "../common/ui/GoggleLogo";
-import { Text } from "../common/ui/Text";
-import Colors from "../constants/Colors";
-import useGetGoogleAuth from "../auth/hooks/useGetGoogleAuth";
+import useGetAppleAuth from "../src/auth/hooks/useGetAppleAuth";
+import Button from "../src/common/ui/Button";
+import GoggleLogo from "../src/common/ui/GoggleLogo";
+import { Text } from "../src/common/ui/Text";
+import Colors from "../src/constants/Colors";
+import useGetGoogleAuth from "../src/auth/hooks/useGetGoogleAuth";
 
 export default function ModalScreen() {
 	const { onClickGoogleLogin } = useGetGoogleAuth();
@@ -43,13 +43,13 @@ export default function ModalScreen() {
 				)}
 				<Button onPress={onClickGoogleLogin} viewStyle={styles.blueButtonStyle}>
 					<GoggleLogo />
-					<Text bold style={{ fontSize: 18 }}>
+					<Text bold fontSize={18} color='white'>
 						Google로 로그인
 					</Text>
 				</Button>
-				<Button onPress={onClickEmailLogin} viewStyle={styles.greenButtonStyle}>
+				<Button onPress={onClickEmailLogin} viewStyle={styles.greyButtonStyle}>
 					<MaterialIcons name='email' size={24} color='white' />
-					<Text bold style={{ fontSize: 18 }}>
+					<Text bold fontSize={18} color='white'>
 						Email로 로그인
 					</Text>
 				</Button>
@@ -97,8 +97,8 @@ const styles = StyleSheet.create({
 		borderRadius: 5,
 		columnGap: 5
 	},
-	greenButtonStyle: {
-		backgroundColor: Colors.light.primary,
+	greyButtonStyle: {
+		backgroundColor: Colors.light.grey800,
 		flexDirection: "row",
 		alignItems: "center",
 		justifyContent: "center",

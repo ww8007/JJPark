@@ -10,13 +10,13 @@ import {
 	StyleSheet,
 	View
 } from "react-native";
-import EmailAndPassword from "../../auth/ui/EmailAndPassword";
-import BottomFixedButton from "../../common/ui/BottomFixedButton";
-import Header from "../../common/ui/Header";
-import Colors from "../../constants/Colors";
+import EmailAndPassword from "../../src/auth/ui/EmailAndPassword";
+import BottomFixedButton from "../../src/common/ui/BottomFixedButton";
+import Header from "../../src/common/ui/Header";
+import Colors from "../../src/constants/Colors";
 import { SafeAreaView } from "react-native-safe-area-context";
-import useEmailStore from "../../auth/store/email";
-import { Text } from "../../common/ui/Text";
+import useEmailStore from "../../src/auth/store/email";
+import { Text } from "../../src/common/ui/Text";
 
 const reset = () => {
 	const router = useRouter();
