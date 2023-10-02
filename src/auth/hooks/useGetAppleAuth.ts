@@ -39,10 +39,8 @@ const useGetAppleAuth = () => {
 				const { user } = res;
 				const token = await user.getIdToken();
 				signInUser(token);
-				console.log("Apple Sign-In success", res);
 			})
 			.catch((err) => {
-				console.log("Apple Sign-In failed", err);
 				analytics().logEvent("apple_sign_in_failed", {
 					error: err
 				});
