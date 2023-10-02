@@ -8,7 +8,7 @@ import {
 	useReducer,
 	useState
 } from "react";
-import firestore from "@react-native-firebase/firestore";
+import { getUser } from "../../user/db/user";
 
 export type ActionMapType<M extends { [index: string]: any }> = {
 	[Key in keyof M]: M[Key] extends undefined
@@ -92,17 +92,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
 			const token = await user?.getIdToken();
 			setToken(token ?? undefined);
 			if (user) {
-				firestore()
-					.collection("users")
-					.where("uid", "==", user.uid)
-					.get()
-					.then((querySnapshot) => {
-						if (querySnapshot.empty) {
-							router.push("/register");
-						} else {
-							router.push("/");
-						}
-					});
+				const userInDB = await getUser(user.uid);
+				if (!userInDB) {
+					router.push("/register");
+				} else {
+					router.push("/");
+				}
 			}
 		});
 	}, [auth()]);
