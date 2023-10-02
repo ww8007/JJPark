@@ -41,7 +41,11 @@ const Header = ({
 					</TouchableHighlight>
 				)}
 				{title && (
-					<Text bold fontSize={22}>
+					<Text
+						style={[showBackButton && styles.withBackTitle]}
+						bold
+						fontSize={22}
+					>
 						{title}
 					</Text>
 				)}
@@ -70,15 +74,16 @@ const styles = StyleSheet.create({
 	},
 	backButtonAndTitleWrapper: {
 		display: "flex",
-
 		height: 56,
 		alignItems: "center",
-
 		flexDirection: "row"
 	},
 	rightButtonWrapper: {
 		height: "100%",
 		display: "flex",
 		alignItems: "center"
+	},
+	withBackTitle: {
+		marginLeft: 10
 	}
 });
