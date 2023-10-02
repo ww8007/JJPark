@@ -1,4 +1,4 @@
-import React, { ReactNode, useCallback } from "react";
+import { ReactNode, useCallback, useEffect, useState } from "react";
 import { View, StyleSheet, TouchableHighlight, Switch } from "react-native";
 import { BlurView } from "@react-native-community/blur";
 import LinearGradient from "react-native-linear-gradient";
@@ -9,10 +9,38 @@ import Colors from "../constants/Colors";
 import { Ionicons as SettingIcon } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
 import SelectButton from "../common/ui/SelectButton";
+import { useRouter } from "expo-router";
+import { STATUS, User, getUser } from "../user/db/user";
+import auth from "@react-native-firebase/auth";
 
 const 신청화면 = () => {
-	const [selected, setSelected] = React.useState(false);
-	const [추가신청_필요, set추가신청_필요] = React.useState(false);
+	const [user, setUser] = useState<User>({
+		carNum: "",
+		name: "",
+		createdAt: null,
+		updatedAt: null,
+		uid: "",
+		status: STATUS.NONE
+	});
+
+	useEffect(() => {
+		(async () => {
+			const uid = auth().currentUser?.uid ?? "";
+			const user = await getUser(uid);
+			if (user) {
+				setUser(user);
+			}
+		})();
+	}, []);
+
+	const [selected, setSelected] = useState(false);
+	const [추가신청_필요, set추가신청_필요] = useState(false);
+
+	const router = useRouter();
+
+	const onClickSetting = () => {
+		router.push("/setting");
+	};
 
 	const onChange추가신청_필요 = () => {
 		set추가신청_필요((previousState) => !previousState);
@@ -33,7 +61,7 @@ const 신청화면 = () => {
 					주차 신청하기
 				</Text>
 				<TouchableHighlight
-					onPress={() => console.log("setting")}
+					onPress={onClickSetting}
 					underlayColor={Colors.light.background}
 				>
 					<SettingIcon
@@ -47,11 +75,11 @@ const 신청화면 = () => {
 				<View style={styles.contentWrapper}>
 					<LeftAndRightItem>
 						<LeftAndRightItem.Left text='신청인' />
-						<LeftAndRightItem.Right text='신청인' />
+						<LeftAndRightItem.Right text={user.name} />
 					</LeftAndRightItem>
 					<LeftAndRightItem>
 						<LeftAndRightItem.Left text='차량 번호' />
-						<LeftAndRightItem.Right text='신청인' />
+						<LeftAndRightItem.Right text={user.carNum} />
 					</LeftAndRightItem>
 					<View>
 						<LeftAndRightItem>
