@@ -9,3 +9,15 @@ export const updateFcmToken = async (uid: string, fcmToken: string) => {
 		throw error;
 	}
 };
+
+export const sendToAdmin = async (uid: string, message: string) => {
+	try {
+		await db.collection("adminNotification").add({
+			uid,
+			createdAt: firestore.FieldValue.serverTimestamp(),
+			content: message
+		});
+	} catch (error) {
+		throw error;
+	}
+};
