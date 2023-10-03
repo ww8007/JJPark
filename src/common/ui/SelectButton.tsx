@@ -3,7 +3,7 @@ import { View, TouchableOpacity, StyleSheet, Dimensions } from "react-native";
 import Colors from "../../constants/Colors";
 import { Text } from "./Text";
 import Animated, { useSharedValue, withSpring } from "react-native-reanimated";
-
+import { MD2Colors } from "react-native-paper";
 interface Props {
 	firstText: string;
 	secondText: string;
@@ -22,7 +22,7 @@ const SelectButton: FC<Props> = ({
 	const translateX = useSharedValue(0);
 	const isInitialMount = useRef(true);
 	const deviceWidth = Dimensions.get("window").width;
-	const buttonWidth = deviceWidth / 2 - 30 - 20;
+	const buttonWidth = deviceWidth / 2 - 20 - 20;
 
 	useEffect(() => {
 		if (isInitialMount.current) {
@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
 		width: "100%",
 		height: 40,
 		borderRadius: 7,
-		backgroundColor: Colors.light.white,
+		backgroundColor: MD2Colors.white,
 		position: "relative",
 		overflow: "hidden"
 	},
