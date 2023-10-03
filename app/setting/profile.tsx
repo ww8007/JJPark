@@ -10,9 +10,11 @@ import { Text } from "../../src/common/ui/Text";
 import { TextInput } from "../../src/common/ui/Input";
 import { getUser, updateUser } from "../../src/user/db/user";
 import { useRouter } from "expo-router";
+import useAuthContext from "../../src/auth/hooks/useAuthContext";
 
 const profile = () => {
 	const router = useRouter();
+	const { setUser } = useAuthContext();
 	const [initialData, setInitialData] = useState({
 		name: "",
 		carNum: ""
@@ -54,18 +56,20 @@ const profile = () => {
 			registerInfo.carNum === initialData.carNum
 	);
 
-	const onClickRegister = () => {
+	const onClickRegister = async () => {
 		if (!isAllFilled) {
 			Alert.alert("모든 정보를 입력해주세요");
 		}
 		// 차량 번호에서 공백 제거
 		const carNum = registerInfo.carNum.replace(/\s/g, "");
 		const uid = auth().currentUser?.uid ?? "";
-		updateUser(uid, {
+		const updatedUser = await updateUser(uid, {
 			carNum,
 			updatedAt: firestore.FieldValue.serverTimestamp(),
 			name: registerInfo.name
 		});
+		setUser(updatedUser);
+		router.back();
 	};
 
 	return (
