@@ -20,7 +20,8 @@ const 신청화면 = () => {
 		createdAt: null,
 		updatedAt: null,
 		uid: "",
-		status: STATUS.NONE
+		status: STATUS.NONE,
+		fcmToken: ""
 	});
 
 	useEffect(() => {
