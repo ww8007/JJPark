@@ -9,6 +9,7 @@ import {
 	useState
 } from "react";
 import { getUser } from "../../user/db/user";
+import useNotification from "../../notification/hooks/useNotification";
 
 export type ActionMapType<M extends { [index: string]: any }> = {
 	[Key in keyof M]: M[Key] extends undefined
@@ -85,12 +86,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
 	const router = useRouter();
 	const [state, dispatch] = useReducer(reducer, initialState);
 	const [token, setToken] = useState<string | undefined>(undefined);
+	const { requestUserPermission } = useNotification();
 
 	useEffect(() => {
 		auth().onAuthStateChanged(async (user) => {
 			if (!user) router.push("/login");
 			const token = await user?.getIdToken();
 			setToken(token ?? undefined);
+			requestUserPermission();
 			if (user) {
 				const userInDB = await getUser(user.uid);
 				if (!userInDB) {

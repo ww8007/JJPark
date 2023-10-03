@@ -16,6 +16,7 @@ export interface User {
 	updatedAt: unknown;
 	uid: string;
 	status: STATUS;
+	fcmToken: string;
 }
 
 export const addUser = async (user: User) => {
