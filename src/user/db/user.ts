@@ -17,7 +17,19 @@ export interface User {
 	uid: string;
 	status: STATUS;
 	fcmToken: string;
+	time: 0 | 3 | 5;
 }
+
+export const defaultUser: User = {
+	name: "",
+	carNum: "",
+	createdAt: firestore.FieldValue.serverTimestamp(),
+	updatedAt: firestore.FieldValue.serverTimestamp(),
+	uid: "",
+	status: STATUS.NONE,
+	fcmToken: "",
+	time: 3
+};
 
 export const addUser = async (user: User) => {
 	try {
@@ -39,6 +51,8 @@ export const getUser = async (uid: string) => {
 export const updateUser = async (uid: string, user: Partial<User>) => {
 	try {
 		await db.collection("users").doc(uid).update(user);
+		const updatedUser = await getUser(uid);
+		return updatedUser;
 	} catch (error) {
 		throw error;
 	}

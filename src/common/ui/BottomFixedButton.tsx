@@ -8,10 +8,12 @@ import { Text } from "./Text";
 type TouchableOpacityProps = ComponentProps<typeof TouchableOpacity>;
 export type TouchableViewProps = TouchableOpacityProps & {
 	viewStyle?: StyleProp<ViewStyle>;
+	buttonColor?: string;
 };
 const BottomFixedButton = ({
 	children,
 	viewStyle,
+	buttonColor = Colors.light.lightPrimary,
 	...touchableProps
 }: TouchableViewProps) => {
 	return (
@@ -19,6 +21,7 @@ const BottomFixedButton = ({
 			<TouchableOpacity
 				style={[
 					styles.bottomFixedButton,
+					{ backgroundColor: buttonColor },
 					touchableProps.disabled && styles.disabled
 				]}
 				{...touchableProps}
@@ -52,7 +55,6 @@ const styles = StyleSheet.create({
 		justifyContent: "center",
 		justifySelf: "center",
 		alignItems: "center",
-		backgroundColor: Colors.light.lightPrimary,
 		borderRadius: 10
 	},
 	disabled: {
