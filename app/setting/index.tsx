@@ -1,5 +1,5 @@
 import React from "react";
-import { SafeAreaView, StyleSheet, View } from "react-native";
+import { Alert, SafeAreaView, StyleSheet, View } from "react-native";
 import Header from "../../src/common/ui/Header";
 import Colors from "../../src/constants/Colors";
 import { TouchableHighlight } from "react-native-gesture-handler";
@@ -16,11 +16,29 @@ const index = () => {
 	};
 
 	const onClick_로그아웃 = () => {
-		auth().signOut();
+		Alert.alert("로그아웃", "정말로 로그아웃을 하시겠습니까?", [
+			{
+				text: "취소",
+				onPress: () => {}
+			},
+			{
+				text: "확인",
+				onPress: () => auth().signOut()
+			}
+		]);
 	};
 
 	const onClick_회원탈퇴 = () => {
-		auth().currentUser?.delete();
+		Alert.alert("회원탈퇴", "정말로 회원탈퇴를 하시겠습니까?", [
+			{
+				text: "취소",
+				onPress: () => {}
+			},
+			{
+				text: "확인",
+				onPress: () => auth().currentUser?.delete()
+			}
+		]);
 	};
 
 	const onClick_문의하기 = () => {
