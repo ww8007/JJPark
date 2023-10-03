@@ -5,10 +5,9 @@ import {
 	useCallback,
 	useEffect,
 	useMemo,
-	useReducer,
-	useState
+	useReducer
 } from "react";
-import { getUser } from "../../user/db/user";
+import { User, getUser } from "../../user/db/user";
 import useNotification from "../../notification/hooks/useNotification";
 
 export type ActionMapType<M extends { [index: string]: any }> = {
@@ -22,11 +21,6 @@ export type ActionMapType<M extends { [index: string]: any }> = {
 		  };
 };
 
-interface User {
-	token: string;
-	[key: string]: any;
-}
-
 export type AuthUserType = User | null;
 
 export type AuthStateType = {
@@ -38,6 +32,7 @@ export type Auth0ContextType = {
 	isInitialized: boolean;
 	user: AuthUserType | null;
 	logout: () => void;
+	setUser: (user: AuthUserType) => void;
 };
 
 enum Types {
@@ -85,17 +80,20 @@ type AuthProviderProps = {
 export function AuthProvider({ children }: AuthProviderProps) {
 	const router = useRouter();
 	const [state, dispatch] = useReducer(reducer, initialState);
-	const [token, setToken] = useState<string | undefined>(undefined);
 	const { requestUserPermission } = useNotification();
 
 	useEffect(() => {
 		auth().onAuthStateChanged(async (user) => {
 			if (!user) router.push("/login");
-			const token = await user?.getIdToken();
-			setToken(token ?? undefined);
 			requestUserPermission();
 			if (user) {
 				const userInDB = await getUser(user.uid);
+				dispatch({
+					type: Types.INITIAL,
+					payload: {
+						user: userInDB
+					}
+				});
 				if (!userInDB) {
 					router.push("/register");
 				} else {
@@ -108,16 +106,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
 	const initialize = useCallback(async () => {
 		try {
 			auth().onAuthStateChanged(async (user) => {
-				dispatch({
-					type: Types.INITIAL,
-					payload: {
-						user: {
-							...user,
-							displayName: user?.displayName,
-							token: (await user?.getIdToken()) ?? ""
+				if (user) {
+					const userInDB = await getUser(user.uid);
+					dispatch({
+						type: Types.INITIAL,
+						payload: {
+							user: userInDB
 						}
-					}
-				});
+					});
+				}
 			});
 		} catch (error) {
 			console.error(error);
@@ -138,18 +135,25 @@ export function AuthProvider({ children }: AuthProviderProps) {
 		});
 	}, []);
 
-	// INITIALIZE
-	useEffect(() => {
-		auth().onAuthStateChanged(async () => {
-			initialize();
-		});
-	}, [initialize]);
+	// SET USER
+	const setUser = useCallback(
+		(user: AuthUserType) => {
+			dispatch({
+				type: Types.INITIAL,
+				payload: {
+					user
+				}
+			});
+		},
+		[dispatch]
+	);
 
 	const memoizedValue = useMemo(
 		() => ({
 			isInitialized: state.isInitialized,
 			user: state.user,
-			logout
+			logout,
+			setUser
 		}),
 		[state.isInitialized, state.user, logout]
 	);
