@@ -38,7 +38,8 @@ const register = () => {
 			updatedAt: firestore.FieldValue.serverTimestamp(),
 			uid: auth().currentUser?.uid ?? "",
 			status: STATUS.NONE,
-			fcmToken: ""
+			fcmToken: "",
+			time: 0
 		});
 	};
 
