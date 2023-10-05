@@ -17,8 +17,10 @@ import Header from "../../src/common/ui/Header";
 import Colors from "../../src/constants/Colors";
 import useEmailStore from "../../src/auth/store/email";
 import useSignInUser from "../../src/auth/hooks/useSignInUser";
+import { useRouter } from "expo-router";
 
 const register = () => {
+	const router = useRouter();
 	const { email, password } = useEmailStore();
 
 	const { signInUser } = useSignInUser();
@@ -34,14 +36,17 @@ const register = () => {
 		}
 		auth()
 			.createUserWithEmailAndPassword(email, password)
-			.then((res) => {
+			.then(async (res) => {
 				res.user?.getIdToken().then((token) => {
 					signInUser(token);
 				});
+				auth().signInWithEmailAndPassword(email, password);
+				Alert.alert("회원가입이 완료되었습니다.");
 			})
 			.catch((error) => {
 				if (error.code === "auth/email-already-in-use") {
 					Alert.alert("이미 사용중인 이메일입니다.");
+					router.replace("/register");
 				}
 				if (error.code === "auth/invalid-email") {
 					Alert.alert("유효하지 않은 이메일입니다.");

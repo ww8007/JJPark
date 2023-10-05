@@ -64,7 +64,7 @@ const reset = () => {
 						<EmailAndPassword withPassword={false} />
 					</View>
 					<BottomFixedButton onPress={onPressLogin}>
-						<Text style={{ fontFamily: "NanumSquareBold", fontSize: 16 }}>
+						<Text fontSize={16} color='white' bold>
 							재설정 이메일 보내기
 						</Text>
 					</BottomFixedButton>

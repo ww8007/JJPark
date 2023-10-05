@@ -25,7 +25,7 @@ const login = () => {
 	const { email, password, initialize } = useEmailStore();
 
 	const onPressRegister = () => {
-		router.push("/email/register");
+		router.push("/email/registerEmail");
 	};
 
 	const onPressReset = () => {
@@ -50,7 +50,7 @@ const login = () => {
 					signInUser(token);
 				});
 				initialize();
-				router.push("/");
+				router.push("/register");
 			})
 			.catch((error) => {
 				if (error.code === "auth/user-not-found") {
@@ -61,6 +61,9 @@ const login = () => {
 				}
 				if (error.code === "auth/invalid-email") {
 					Alert.alert("유효하지 않은 이메일입니다.");
+				}
+				if (error.code === "auth/invalid-login") {
+					Alert.alert("회원정보가 유효하지 않습니다.");
 				}
 				console.error(error);
 			});
