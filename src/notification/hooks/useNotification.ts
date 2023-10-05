@@ -1,21 +1,12 @@
 import messaging from "@react-native-firebase/messaging";
-import { useEffect, useState } from "react";
-import { Alert, PermissionsAndroid, Platform } from "react-native";
+import { useEffect } from "react";
+import { PermissionsAndroid, Platform } from "react-native";
 import { updateFcmToken } from "../db/notification";
-import auth from "@react-native-firebase/auth";
-import { User, getUser } from "../../user/db/user";
+import { getUser } from "../../user/db/user";
+import useAuthContext from "../../auth/hooks/useAuthContext";
 
 const useNotification = () => {
-	const currentUser = auth().currentUser;
-	const [user, setUser] = useState<User | null>(null);
-
-	useEffect(() => {
-		(async () => {
-			if (!currentUser) return;
-			const user = await getUser(currentUser.uid);
-			setUser(user);
-		})();
-	}, [currentUser]);
+	const { user, setUser: authSetUser } = useAuthContext();
 
 	const requestUserPermission = async () => {
 		if (Platform.OS === "android") {
@@ -36,22 +27,25 @@ const useNotification = () => {
 	};
 
 	useEffect(() => {
-		if (!currentUser) return;
+		if (!user) return;
 		messaging()
 			.getToken()
 			.then((token) => {
 				if (user?.fcmToken === token) return;
-				updateFcmToken(currentUser.uid, token);
+				updateFcmToken(user.uid, token);
 			});
-	}, [currentUser]);
+	}, [user]);
 
 	useEffect(() => {
 		const unsubscribe = messaging().onMessage(async (remoteMessage) => {
-			Alert.alert("A new FCM message arrived!", JSON.stringify(remoteMessage));
+			if (remoteMessage.notification?.title === "신청이 처리되었습니다") {
+				const updatedUser = await getUser(user?.uid || "");
+				authSetUser(updatedUser);
+			}
 		});
 
 		return unsubscribe;
-	}, []);
+	}, [user]);
 
 	return { requestUserPermission };
 };
