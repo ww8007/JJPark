@@ -49,6 +49,8 @@ const login = () => {
 				res.user?.getIdToken().then((token) => {
 					signInUser(token);
 				});
+				initialize();
+				router.push("/");
 			})
 			.catch((error) => {
 				if (error.code === "auth/user-not-found") {
@@ -97,7 +99,7 @@ const login = () => {
 						</View>
 					</View>
 					<BottomFixedButton onPress={onPressLogin}>
-						<Text style={{ fontFamily: "NanumSquareBold", fontSize: 16 }}>
+						<Text bold color='white'>
 							로그인
 						</Text>
 					</BottomFixedButton>
