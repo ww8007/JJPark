@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { View, StyleSheet, TouchableHighlight } from "react-native";
+import { View, StyleSheet, TouchableHighlight, StatusBar } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Text } from "../../common/ui/Text";
 import BottomFixedButton from "../../common/ui/BottomFixedButton";
@@ -54,6 +54,7 @@ const 신청화면 = ({ onNext }: 신청화면Props) => {
 
 	return (
 		<SafeAreaView style={styles.safeArea}>
+			<StatusBar barStyle='dark-content' />
 			<View style={styles.headerWrapper}>
 				<Text style={styles.headerText} bold>
 					주차 신청하기
