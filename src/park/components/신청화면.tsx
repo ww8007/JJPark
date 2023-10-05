@@ -4,16 +4,16 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Text } from "../../common/ui/Text";
 import BottomFixedButton from "../../common/ui/BottomFixedButton";
 import Colors from "../../constants/Colors";
-import { Ionicons as SettingIcon } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import { Entypo } from "@expo/vector-icons";
 import SelectButton from "../../common/ui/SelectButton";
 import { useRouter } from "expo-router";
 import { STATUS, updateUser } from "../../user/db/user";
-
 import CardGradient from "../../common/ui/CardGradient";
 import LeftAndRightItem from "../../common/ui/LeftAndRightItem";
 import useAuthContext from "../../auth/hooks/useAuthContext";
 import { sendToAdmin } from "../../notification/db/notification";
+import dayjs from "dayjs";
 
 interface 신청화면Props {
 	onNext: () => void;
@@ -41,11 +41,12 @@ const 신청화면 = ({ onNext }: 신청화면Props) => {
 		if (!user) return;
 		const updatedUser = await updateUser(user.uid, {
 			time: selected ? 5 : 3,
-			status: STATUS.PENDING
+			status: STATUS.PENDING,
+			updatedAt: dayjs().unix()
 		});
 		await sendToAdmin(
 			user.uid,
-			`${user.name}님이 ${user.time}시간을 신청하셨습니다`
+			`${user.name}님이 ${selected ? 5 : 3}시간을 신청하셨습니다`
 		);
 		setUser(updatedUser);
 		onNext();
@@ -61,7 +62,7 @@ const 신청화면 = ({ onNext }: 신청화면Props) => {
 					onPress={onClickSetting}
 					underlayColor={Colors.light.background}
 				>
-					<SettingIcon
+					<Ionicons
 						name='settings-sharp'
 						size={30}
 						color={Colors.light.grey600}
@@ -69,7 +70,7 @@ const 신청화면 = ({ onNext }: 신청화면Props) => {
 				</TouchableHighlight>
 			</View>
 			<CardGradient
-				height={50}
+				height={60}
 				withHeader={{
 					headerText: "신청 정보",
 					headerColor: Colors.light.lightPrimary
@@ -83,6 +84,10 @@ const 신청화면 = ({ onNext }: 신청화면Props) => {
 					<LeftAndRightItem>
 						<LeftAndRightItem.Left text='차량 번호' />
 						<LeftAndRightItem.Right text={user?.carNum ?? ""} />
+					</LeftAndRightItem>
+					<LeftAndRightItem>
+						<LeftAndRightItem.Left text='소속' />
+						<LeftAndRightItem.Right text={user?.role ?? ""} />
 					</LeftAndRightItem>
 					<View>
 						<LeftAndRightItem>
@@ -122,7 +127,7 @@ const styles = StyleSheet.create({
 		paddingLeft: 30,
 		paddingRight: 30,
 		paddingTop: 20,
-		paddingBottom: "30%"
+		paddingBottom: "20%"
 	},
 	headerText: {
 		fontSize: 24,

@@ -4,7 +4,7 @@ const Colors = {
 		background: "#ffffff",
 		primary: "#5D5FEF",
 		lightPrimary: "#7678E1",
-		buttonGreen: "#7678E1",
+		pastelBlue: "#A7A7FF",
 		white: "#ffffff",
 		black: "#161617",
 		grey200: "#EEEEEE",
