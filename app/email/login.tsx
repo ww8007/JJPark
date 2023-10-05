@@ -18,6 +18,7 @@ import Colors from "../../src/constants/Colors";
 import useEmailStore from "../../src/auth/store/email";
 import useSignInUser from "../../src/auth/hooks/useSignInUser";
 import { Text } from "../../src/common/ui/Text";
+import { getUser } from "../../src/user/db/user";
 
 const login = () => {
 	const router = useRouter();
@@ -45,11 +46,16 @@ const login = () => {
 		}
 		auth()
 			.signInWithEmailAndPassword(email, password)
-			.then((res) => {
+			.then(async (res) => {
 				res.user?.getIdToken().then((token) => {
 					signInUser(token);
 				});
 				initialize();
+				const user = await getUser(auth().currentUser?.uid ?? "");
+				if (user.uid) {
+					router.push("/");
+					return;
+				}
 				router.push("/register");
 			})
 			.catch((error) => {

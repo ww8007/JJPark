@@ -40,13 +40,12 @@ const register = () => {
 				res.user?.getIdToken().then((token) => {
 					signInUser(token);
 				});
-				auth().signInWithEmailAndPassword(email, password);
+				router.push("/login");
 				Alert.alert("회원가입이 완료되었습니다.");
 			})
 			.catch((error) => {
 				if (error.code === "auth/email-already-in-use") {
 					Alert.alert("이미 사용중인 이메일입니다.");
-					router.replace("/register");
 				}
 				if (error.code === "auth/invalid-email") {
 					Alert.alert("유효하지 않은 이메일입니다.");
