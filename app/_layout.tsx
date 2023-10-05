@@ -57,6 +57,7 @@ function RootLayoutNav() {
 					<Stack.Screen name='email' options={{ animation: "flip" }} />
 					<Stack.Screen name='register' options={{ animation: "flip" }} />
 					<Stack.Screen name='setting' options={{ animation: "flip" }} />
+					<Stack.Screen name='admin' options={{ animation: "flip" }} />
 				</Stack>
 			</ThemeProvider>
 		</AuthProvider>
