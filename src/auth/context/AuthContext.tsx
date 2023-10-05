@@ -7,8 +7,7 @@ import {
 	useMemo,
 	useReducer
 } from "react";
-import { User, getUser } from "../../user/db/user";
-import useNotification from "../../notification/hooks/useNotification";
+import { User, defaultUser, getUser, isAdmin } from "../../user/db/user";
 
 export type ActionMapType<M extends { [index: string]: any }> = {
 	[Key in keyof M]: M[Key] extends undefined
@@ -37,11 +36,15 @@ export type Auth0ContextType = {
 
 enum Types {
 	INITIAL = "INITIAL",
+	UPDATE = "UPDATE",
 	LOGOUT = "LOGOUT"
 }
 
 type Payload = {
 	[Types.INITIAL]: {
+		user: AuthUserType;
+	};
+	[Types.UPDATE]: {
 		user: AuthUserType;
 	};
 	[Types.LOGOUT]: undefined;
@@ -58,6 +61,12 @@ const reducer = (state: AuthStateType, action: ActionsType) => {
 	if (action.type === Types.INITIAL) {
 		return {
 			isInitialized: true,
+			user: action.payload.user
+		};
+	}
+	if (action.type === Types.UPDATE) {
+		return {
+			...state,
 			user: action.payload.user
 		};
 	}
@@ -80,13 +89,24 @@ type AuthProviderProps = {
 export function AuthProvider({ children }: AuthProviderProps) {
 	const router = useRouter();
 	const [state, dispatch] = useReducer(reducer, initialState);
-	const { requestUserPermission } = useNotification();
 
 	useEffect(() => {
 		auth().onAuthStateChanged(async (user) => {
 			if (!user) router.push("/login");
-			requestUserPermission();
+
 			if (user) {
+				const isAdminUser = await isAdmin(user.uid);
+				if (isAdminUser) {
+					dispatch({
+						type: Types.INITIAL,
+						payload: {
+							user: { ...defaultUser, uid: user.uid }
+						}
+					});
+					router.push("/admin");
+					return;
+				}
+
 				const userInDB = await getUser(user.uid);
 				dispatch({
 					type: Types.INITIAL,
@@ -103,30 +123,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
 		});
 	}, [auth()]);
 
-	const initialize = useCallback(async () => {
-		try {
-			auth().onAuthStateChanged(async (user) => {
-				if (user) {
-					const userInDB = await getUser(user.uid);
-					dispatch({
-						type: Types.INITIAL,
-						payload: {
-							user: userInDB
-						}
-					});
-				}
-			});
-		} catch (error) {
-			console.error(error);
-			dispatch({
-				type: Types.INITIAL,
-				payload: {
-					user: null
-				}
-			});
-		}
-	}, [auth]);
-
 	// LOGOUT
 	const logout = useCallback(() => {
 		auth().signOut();
@@ -136,17 +132,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
 	}, []);
 
 	// SET USER
-	const setUser = useCallback(
-		(user: AuthUserType) => {
-			dispatch({
-				type: Types.INITIAL,
-				payload: {
-					user
-				}
-			});
-		},
-		[dispatch]
-	);
+	const setUser = useCallback((user: AuthUserType) => {
+		dispatch({
+			type: Types.UPDATE,
+			payload: {
+				user
+			}
+		});
+	}, []);
 
 	const memoizedValue = useMemo(
 		() => ({
@@ -155,7 +148,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 			logout,
 			setUser
 		}),
-		[state.isInitialized, state.user, logout]
+		[state.isInitialized, state.user, setUser, logout]
 	);
 
 	return (
