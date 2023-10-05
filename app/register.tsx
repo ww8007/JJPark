@@ -5,14 +5,18 @@ import Header from "../src/common/ui/Header";
 import { TextInput } from "../src/common/ui/Input";
 import { Alert, StatusBar, StyleSheet, View } from "react-native";
 import BottomFixedButton from "../src/common/ui/BottomFixedButton";
-import firestore from "@react-native-firebase/firestore";
 import auth from "@react-native-firebase/auth";
 import { STATUS, addUser } from "../src/user/db/user";
+import dayjs from "dayjs";
+import { useRouter } from "expo-router";
+import useAuthContext from "../src/auth/hooks/useAuthContext";
 
 const register = () => {
+	const { setUser } = useAuthContext();
 	const [registerInfo, setRegisterInfo] = useState({
 		name: "",
-		carNum: ""
+		carNum: "",
+		role: ""
 	});
 
 	const onChangeName = (text: string) => {
@@ -23,7 +27,13 @@ const register = () => {
 		setRegisterInfo({ ...registerInfo, carNum: text });
 	};
 
+	const onChangeRole = (text: string) => {
+		setRegisterInfo({ ...registerInfo, role: text });
+	};
+
 	const isAllFilled = Boolean(registerInfo.name && registerInfo.carNum);
+
+	const router = useRouter();
 
 	const onClickRegister = async () => {
 		if (!isAllFilled) {
@@ -31,16 +41,20 @@ const register = () => {
 		}
 		// 차량 번호에서 공백 제거
 		const carNum = registerInfo.carNum.replace(/\s/g, "");
-		addUser({
+		const user = await addUser({
 			carNum,
 			name: registerInfo.name,
-			createdAt: firestore.FieldValue.serverTimestamp(),
-			updatedAt: firestore.FieldValue.serverTimestamp(),
+			createdAt: dayjs().unix(),
+			updatedAt: dayjs().unix(),
 			uid: auth().currentUser?.uid ?? "",
 			status: STATUS.NONE,
 			fcmToken: "",
-			time: 0
+			time: 0,
+			role: registerInfo.role
 		});
+		setUser(user);
+
+		router.push("/");
 	};
 
 	return (
@@ -60,6 +74,12 @@ const register = () => {
 					title='차량번호'
 					placeholder='차량번호를 입력해주세요'
 				/>
+				<TitleAndInput
+					value={registerInfo.role}
+					onChange={onChangeRole}
+					title='소속'
+					placeholder='소속을 입력해주세요'
+				/>
 			</View>
 			<BottomFixedButton disabled={!isAllFilled} onPress={onClickRegister}>
 				등록하기
@@ -76,7 +96,7 @@ const styles = StyleSheet.create({
 		backgroundColor: "white"
 	},
 	container: {
-		flex: 0.4,
+		flex: 0.5,
 		backgroundColor: "white",
 		alignContent: "flex-start"
 	}

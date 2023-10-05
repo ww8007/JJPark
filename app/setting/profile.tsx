@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Alert, StatusBar, StyleSheet, View } from "react-native";
-
-import firestore from "@react-native-firebase/firestore";
 import auth from "@react-native-firebase/auth";
 import Header from "../../src/common/ui/Header";
 import BottomFixedButton from "../../src/common/ui/BottomFixedButton";
@@ -17,11 +15,13 @@ const profile = () => {
 	const { setUser } = useAuthContext();
 	const [initialData, setInitialData] = useState({
 		name: "",
-		carNum: ""
+		carNum: "",
+		role: ""
 	});
 	const [registerInfo, setRegisterInfo] = useState({
 		name: "",
-		carNum: ""
+		carNum: "",
+		role: ""
 	});
 
 	// fireStore에서 데이터 가져오기
@@ -32,11 +32,13 @@ const profile = () => {
 			if (user) {
 				setRegisterInfo({
 					name: user.name,
-					carNum: user.carNum
+					carNum: user.carNum,
+					role: user.role
 				});
 				setInitialData({
 					name: user.name,
-					carNum: user.carNum
+					carNum: user.carNum,
+					role: user.role
 				});
 			}
 		})();
@@ -48,6 +50,10 @@ const profile = () => {
 
 	const onChangeCarNum = (text: string) => {
 		setRegisterInfo({ ...registerInfo, carNum: text });
+	};
+
+	const onChangeRole = (text: string) => {
+		setRegisterInfo({ ...registerInfo, role: text });
 	};
 
 	const isAllFilled = Boolean(registerInfo.name && registerInfo.carNum);
@@ -65,7 +71,6 @@ const profile = () => {
 		const uid = auth().currentUser?.uid ?? "";
 		const updatedUser = await updateUser(uid, {
 			carNum,
-			updatedAt: firestore.FieldValue.serverTimestamp(),
 			name: registerInfo.name
 		});
 		setUser(updatedUser);
@@ -89,6 +94,12 @@ const profile = () => {
 					title='차량번호 (11가 1111)'
 					placeholder='차량번호를 입력해주세요'
 				/>
+				<TitleAndInput
+					value={registerInfo.role}
+					onChange={onChangeRole}
+					title='소속'
+					placeholder='소속을 입력해주세요'
+				/>
 			</View>
 			<BottomFixedButton
 				disabled={!isAllFilled || isSameBefore}
@@ -108,7 +119,7 @@ const styles = StyleSheet.create({
 		backgroundColor: "white"
 	},
 	container: {
-		flex: 0.4,
+		flex: 0.5,
 		backgroundColor: "white",
 		alignContent: "flex-start"
 	}
