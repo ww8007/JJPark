@@ -13,6 +13,7 @@ interface GradientProps {
 		headerText: string;
 		headerColor: string;
 	} | null;
+	gradientColors?: string;
 	children: ReactNode;
 }
 
@@ -20,6 +21,7 @@ const CardGradient = ({
 	height = 60,
 	blurAmount = 6,
 	withHeader = null,
+	gradientColors = "rgba(193, 194, 255, 0.70)",
 	children
 }: GradientProps) => {
 	return (
@@ -30,7 +32,7 @@ const CardGradient = ({
 				blurAmount={blurAmount}
 			>
 				<LinearGradient
-					colors={["rgba(193, 194, 255, 0.70)", "rgba(255, 255, 255, 0.07)"]}
+					colors={[gradientColors, "rgba(255, 255, 255, 0.07)"]}
 					start={{ x: 0, y: 0 }}
 					end={{ x: 1, y: 1 }}
 					style={styles.gradient}
@@ -72,14 +74,13 @@ export default CardGradient;
 const styles = StyleSheet.create({
 	gradientWrapper: {
 		width: "100%",
-		padding: 20
+		padding: 20,
+		borderRadius: 12
 	},
 	gradientContainer: {
 		width: "100%",
 		height: "100%",
-		borderRadius: 12,
-
-		overflow: "hidden"
+		borderRadius: 12
 	},
 	gradient: {
 		flex: 1,
@@ -98,6 +99,8 @@ const styles = StyleSheet.create({
 		paddingTop: 0,
 		height: 40,
 		alignItems: "center",
-		backgroundColor: Colors.light.lightPrimary
+		backgroundColor: Colors.light.lightPrimary,
+		borderTopLeftRadius: 12,
+		borderTopRightRadius: 12
 	}
 });
