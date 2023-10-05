@@ -47,6 +47,15 @@ const useNotification = () => {
 		return unsubscribe;
 	}, [user]);
 
+	useEffect(() => {
+		messaging().setBackgroundMessageHandler(async (remoteMessage) => {
+			if (remoteMessage.notification?.title === "신청이 처리되었습니다") {
+				const updatedUser = await getUser(user?.uid || "");
+				authSetUser(updatedUser);
+			}
+		});
+	}, [user]);
+
 	return { requestUserPermission };
 };
 
