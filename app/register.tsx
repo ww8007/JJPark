@@ -3,7 +3,14 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Text } from "../src/common/ui/Text";
 import Header from "../src/common/ui/Header";
 import { TextInput } from "../src/common/ui/Input";
-import { Alert, StatusBar, StyleSheet, View } from "react-native";
+import {
+	Alert,
+	KeyboardAvoidingView,
+	Platform,
+	StatusBar,
+	StyleSheet,
+	View
+} from "react-native";
 import BottomFixedButton from "../src/common/ui/BottomFixedButton";
 import auth from "@react-native-firebase/auth";
 import { STATUS, addUser } from "../src/user/db/user";
@@ -31,7 +38,9 @@ const register = () => {
 		setRegisterInfo({ ...registerInfo, role: text });
 	};
 
-	const isAllFilled = Boolean(registerInfo.name && registerInfo.carNum);
+	const isAllFilled = Boolean(
+		registerInfo.name && registerInfo.carNum && registerInfo.role
+	);
 
 	const router = useRouter();
 
@@ -59,28 +68,34 @@ const register = () => {
 
 	return (
 		<SafeAreaView style={styles.safeArea}>
-			<StatusBar barStyle='dark-content' />
 			<Header title='차량정보 등록' />
-			<View style={styles.container}>
-				<TitleAndInput
-					value={registerInfo.name}
-					onChange={onChangeName}
-					title='이름'
-					placeholder='이름을 입력해주세요'
-				/>
-				<TitleAndInput
-					value={registerInfo.carNum}
-					onChange={onChangeCarNum}
-					title='차량번호'
-					placeholder='차량번호를 입력해주세요'
-				/>
-				<TitleAndInput
-					value={registerInfo.role}
-					onChange={onChangeRole}
-					title='소속'
-					placeholder='소속을 입력해주세요'
-				/>
-			</View>
+			<StatusBar barStyle='dark-content' />
+			<KeyboardAvoidingView
+				behavior={Platform.OS === "ios" ? "padding" : "height"}
+				style={styles.safeArea}
+			>
+				<View style={styles.container}>
+					<TitleAndInput
+						value={registerInfo.name}
+						onChange={onChangeName}
+						title='이름'
+						placeholder='이름을 입력해주세요'
+					/>
+					<TitleAndInput
+						value={registerInfo.carNum}
+						onChange={onChangeCarNum}
+						title='차량번호'
+						placeholder='차량번호를 입력해주세요'
+					/>
+					<TitleAndInput
+						value={registerInfo.role}
+						onChange={onChangeRole}
+						title='소속'
+						placeholder='소속을 입력해주세요'
+					/>
+					<View style={styles.blankView} />
+				</View>
+			</KeyboardAvoidingView>
 			<BottomFixedButton disabled={!isAllFilled} onPress={onClickRegister}>
 				등록하기
 			</BottomFixedButton>
@@ -96,9 +111,12 @@ const styles = StyleSheet.create({
 		backgroundColor: "white"
 	},
 	container: {
-		flex: 0.5,
+		flex: 1,
 		backgroundColor: "white",
-		alignContent: "flex-start"
+		justifyContent: "space-around"
+	},
+	blankView: {
+		flex: 1
 	}
 });
 
@@ -131,9 +149,9 @@ const TitleAndInput = ({
 
 const titleAndInputStyles = StyleSheet.create({
 	container: {
-		flex: 1,
 		backgroundColor: "white",
 		padding: 20,
-		gap: 20
+		gap: 20,
+		height: 120
 	}
 });
