@@ -1,7 +1,7 @@
 import useFunnel from "../src/common/hooks/useFunnel";
 import 신청화면 from "../src/park/components/신청화면";
 import 결과화면 from "../src/park/components/결과화면";
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import useAuthContext from "../src/auth/hooks/useAuthContext";
 import { STATUS } from "../src/user/db/user";
 import useNotification from "../src/notification/hooks/useNotification";
@@ -19,20 +19,20 @@ const index = () => {
 		step: memoStep
 	});
 
-	const onClickSubmit = () => {
+	const onClickSubmit = useCallback(() => {
 		setStep("RESULT");
-	};
+	}, []);
 
-	const onClickCancel = () => {
+	const onClickCancel = useCallback(() => {
 		setStep("SUBMIT");
-	};
+	}, []);
 
 	useEffect(() => {
 		if (!user) return;
 		if (user.status !== STATUS.NONE) {
 			setStep("RESULT");
 		}
-	}, [user]);
+	}, [user?.status]);
 
 	return (
 		<>

@@ -92,7 +92,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
 	useEffect(() => {
 		auth().onAuthStateChanged(async (user) => {
-			if (!user) router.push("/login");
+			if (!user) {
+				router.push("/login");
+			}
 
 			if (user) {
 				const isAdminUser = await isAdmin(user.uid);
@@ -121,7 +123,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 				}
 			}
 		});
-	}, [auth()]);
+	}, [auth().currentUser]);
 
 	// LOGOUT
 	const logout = useCallback(() => {
@@ -132,14 +134,19 @@ export function AuthProvider({ children }: AuthProviderProps) {
 	}, []);
 
 	// SET USER
-	const setUser = useCallback((user: AuthUserType) => {
-		dispatch({
-			type: Types.UPDATE,
-			payload: {
-				user
+	const setUser = useCallback(
+		(newUser: AuthUserType) => {
+			if (!deepEqual(state.user as TestObject, newUser as TestObject)) {
+				dispatch({
+					type: Types.UPDATE,
+					payload: {
+						user: newUser
+					}
+				});
 			}
-		});
-	}, []);
+		},
+		[state.user]
+	);
 
 	const memoizedValue = useMemo(
 		() => ({
@@ -156,4 +163,38 @@ export function AuthProvider({ children }: AuthProviderProps) {
 			{children}
 		</AuthContext.Provider>
 	);
+}
+
+interface TestObject {
+	[key: string]: any;
+}
+
+function deepEqual(obj1: TestObject, obj2: TestObject) {
+	if (obj1 === obj2) {
+		return true;
+	}
+
+	if (
+		typeof obj1 !== "object" ||
+		obj1 === null ||
+		typeof obj2 !== "object" ||
+		obj2 === null
+	) {
+		return false;
+	}
+
+	const keys1 = Object.keys(obj1);
+	const keys2 = Object.keys(obj2);
+
+	if (keys1.length !== keys2.length) {
+		return false;
+	}
+
+	for (let key of keys1) {
+		if (!keys2.includes(key) || !deepEqual(obj1[key], obj2[key])) {
+			return false;
+		}
+	}
+
+	return true;
 }
