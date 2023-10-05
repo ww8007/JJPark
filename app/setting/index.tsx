@@ -1,5 +1,5 @@
 import React from "react";
-import { Alert, StyleSheet, View } from "react-native";
+import { Alert, StatusBar, StyleSheet, View } from "react-native";
 import Header from "../../src/common/ui/Header";
 import Colors from "../../src/constants/Colors";
 import { TouchableHighlight } from "react-native-gesture-handler";
@@ -47,6 +47,7 @@ const index = () => {
 
 	return (
 		<SafeAreaView style={styles.safeArea}>
+			<StatusBar barStyle='dark-content' />
 			<Header showBackButton title='설정' />
 			<View style={styles.contentWrapper}>
 				<ArrowTextItem text='내 정보 수정' onPress={onClick_내정보수정} />
