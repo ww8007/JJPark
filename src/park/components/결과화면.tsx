@@ -129,6 +129,10 @@ const 결과화면 = ({ onPrev }: 결과화면Props) => {
 								<LeftAndRightItem.Right text={user?.carNum ?? ""} />
 							</LeftAndRightItem>
 							<LeftAndRightItem>
+								<LeftAndRightItem.Left text='소속' />
+								<LeftAndRightItem.Right text={user?.role ?? ""} />
+							</LeftAndRightItem>
+							<LeftAndRightItem>
 								<LeftAndRightItem.Left text='신청시간' />
 								<LeftAndRightItem.Right text={`${user?.time ?? 3} 시간`} />
 							</LeftAndRightItem>
