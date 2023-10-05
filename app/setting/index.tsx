@@ -1,5 +1,5 @@
 import React from "react";
-import { Alert, SafeAreaView, StyleSheet, View } from "react-native";
+import { Alert, StyleSheet, View } from "react-native";
 import Header from "../../src/common/ui/Header";
 import Colors from "../../src/constants/Colors";
 import { TouchableHighlight } from "react-native-gesture-handler";
@@ -7,6 +7,7 @@ import { Text } from "../../src/common/ui/Text";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import auth from "@react-native-firebase/auth";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const index = () => {
 	const router = useRouter();
@@ -36,13 +37,12 @@ const index = () => {
 			},
 			{
 				text: "확인",
-				onPress: () => auth().currentUser?.delete()
+				onPress: () => {
+					auth().currentUser?.delete();
+					router.push("/login");
+				}
 			}
 		]);
-	};
-
-	const onClick_문의하기 = () => {
-		// TODO: 문의하기
 	};
 
 	return (
@@ -52,7 +52,6 @@ const index = () => {
 				<ArrowTextItem text='내 정보 수정' onPress={onClick_내정보수정} />
 				<ArrowTextItem text='로그아웃' onPress={onClick_로그아웃} />
 				<ArrowTextItem text='회원탈퇴' onPress={onClick_회원탈퇴} />
-				<ArrowTextItem text='문의하기' onPress={onClick_문의하기} />
 			</View>
 		</SafeAreaView>
 	);
