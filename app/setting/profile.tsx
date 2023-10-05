@@ -1,6 +1,13 @@
 import { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Alert, StatusBar, StyleSheet, View } from "react-native";
+import {
+	Alert,
+	KeyboardAvoidingView,
+	Platform,
+	StatusBar,
+	StyleSheet,
+	View
+} from "react-native";
 import auth from "@react-native-firebase/auth";
 import Header from "../../src/common/ui/Header";
 import BottomFixedButton from "../../src/common/ui/BottomFixedButton";
@@ -56,10 +63,13 @@ const profile = () => {
 		setRegisterInfo({ ...registerInfo, role: text });
 	};
 
-	const isAllFilled = Boolean(registerInfo.name && registerInfo.carNum);
+	const isAllFilled = Boolean(
+		registerInfo.name && registerInfo.carNum && registerInfo.role
+	);
 	const isSameBefore = Boolean(
 		registerInfo.name === initialData.name &&
-			registerInfo.carNum === initialData.carNum
+			registerInfo.carNum === initialData.carNum &&
+			registerInfo.role === initialData.role
 	);
 
 	const onClickRegister = async () => {
@@ -70,8 +80,9 @@ const profile = () => {
 		const carNum = registerInfo.carNum.replace(/\s/g, "");
 		const uid = auth().currentUser?.uid ?? "";
 		const updatedUser = await updateUser(uid, {
-			carNum,
-			name: registerInfo.name
+			carNum: carNum,
+			name: registerInfo.name,
+			role: registerInfo.role
 		});
 		setUser(updatedUser);
 		router.back();
@@ -79,28 +90,34 @@ const profile = () => {
 
 	return (
 		<SafeAreaView style={styles.safeArea}>
-			<StatusBar barStyle='dark-content' />
 			<Header showBackButton title='내 정보 수정' />
-			<View style={styles.container}>
-				<TitleAndInput
-					value={registerInfo.name}
-					onChange={onChangeName}
-					title='이름'
-					placeholder='이름을 입력해주세요'
-				/>
-				<TitleAndInput
-					value={registerInfo.carNum}
-					onChange={onChangeCarNum}
-					title='차량번호 (11가 1111)'
-					placeholder='차량번호를 입력해주세요'
-				/>
-				<TitleAndInput
-					value={registerInfo.role}
-					onChange={onChangeRole}
-					title='소속'
-					placeholder='소속을 입력해주세요'
-				/>
-			</View>
+			<StatusBar barStyle='dark-content' />
+			<KeyboardAvoidingView
+				behavior={Platform.OS === "ios" ? "padding" : "height"}
+				style={styles.safeArea}
+			>
+				<View style={{ flex: 1, justifyContent: "space-around" }}>
+					<TitleAndInput
+						value={registerInfo.name}
+						onChange={onChangeName}
+						title='이름'
+						placeholder='이름을 입력해주세요'
+					/>
+					<TitleAndInput
+						value={registerInfo.carNum}
+						onChange={onChangeCarNum}
+						title='차량번호 (11가 1111)'
+						placeholder='차량번호를 입력해주세요'
+					/>
+					<TitleAndInput
+						value={registerInfo.role}
+						onChange={onChangeRole}
+						title='소속'
+						placeholder='소속을 입력해주세요'
+					/>
+					<View style={styles.blankView} />
+				</View>
+			</KeyboardAvoidingView>
 			<BottomFixedButton
 				disabled={!isAllFilled || isSameBefore}
 				onPress={onClickRegister}
@@ -119,9 +136,11 @@ const styles = StyleSheet.create({
 		backgroundColor: "white"
 	},
 	container: {
-		flex: 0.5,
-		backgroundColor: "white",
-		alignContent: "flex-start"
+		flex: 1,
+		backgroundColor: "white"
+	},
+	blankView: {
+		flex: 1
 	}
 });
 
@@ -154,9 +173,9 @@ const TitleAndInput = ({
 
 const titleAndInputStyles = StyleSheet.create({
 	container: {
-		flex: 1,
 		backgroundColor: "white",
 		padding: 20,
-		gap: 20
+		gap: 20,
+		height: 120
 	}
 });
