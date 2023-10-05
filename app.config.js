@@ -2,7 +2,7 @@ require("dotenv").config();
 
 export default {
 	expo: {
-		name: "JJPark",
+		name: "JJ 주차장",
 		slug: "JJPark",
 		version: "1.0.0",
 		orientation: "portrait",
