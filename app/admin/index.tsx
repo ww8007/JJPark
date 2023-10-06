@@ -1,7 +1,6 @@
 import {
 	FlatList,
 	RefreshControl,
-	SafeAreaView,
 	StyleSheet,
 	TouchableHighlight,
 	View
@@ -10,10 +9,19 @@ import Colors from "../../src/constants/Colors";
 import { Text } from "../../src/common/ui/Text";
 import ParkItem from "../../src/park/ui/ParkItem";
 import useAdmin from "../../src/admin/service/hooks/useAdmin";
-import { FontAwesome } from "@expo/vector-icons";
+import { FontAwesome, Ionicons } from "@expo/vector-icons";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useRouter } from "expo-router";
+import BlankItem from "../../src/common/ui/BlankItem";
 
 const index = () => {
 	const { parkUserList, onClickParkItem, refreshing, onRefresh } = useAdmin();
+
+	const router = useRouter();
+
+	const onClickSetting = () => {
+		router.push("/setting");
+	};
 
 	return (
 		<SafeAreaView style={styles.safeArea}>
@@ -21,30 +29,50 @@ const index = () => {
 				<Text style={styles.headerText} bold>
 					신청 내역
 				</Text>
-				<TouchableHighlight
-					onPress={onRefresh}
-					underlayColor={Colors.light.background}
-				>
-					<FontAwesome name='refresh' size={30} color={Colors.light.grey600} />
-				</TouchableHighlight>
-			</View>
-
-			<View style={styles.container}>
-				<FlatList
-					data={parkUserList}
-					refreshControl={
-						<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-					}
-					renderItem={({ item }) => (
-						<ParkItem
-							key={item.uid}
-							data={item}
-							onPress={() => onClickParkItem(item)}
+				<View style={styles.iconWrapper}>
+					<TouchableHighlight
+						onPress={onClickSetting}
+						underlayColor={Colors.light.background}
+					>
+						<Ionicons
+							name='settings-sharp'
+							size={24}
+							color={Colors.light.grey600}
 						/>
-					)}
-					keyExtractor={(item) => item.uid}
-				/>
+					</TouchableHighlight>
+					<TouchableHighlight
+						onPress={onRefresh}
+						underlayColor={Colors.light.background}
+					>
+						<FontAwesome
+							name='refresh'
+							size={24}
+							color={Colors.light.grey600}
+						/>
+					</TouchableHighlight>
+				</View>
 			</View>
+			{!parkUserList.length && (
+				<BlankItem refreshing={refreshing} onRefresh={onRefresh} />
+			)}
+			{!!parkUserList.length && (
+				<View style={styles.container}>
+					<FlatList
+						data={parkUserList}
+						refreshControl={
+							<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+						}
+						renderItem={({ item }) => (
+							<ParkItem
+								key={item.uid}
+								data={item}
+								onPress={() => onClickParkItem(item)}
+							/>
+						)}
+						keyExtractor={(item) => item.uid}
+					/>
+				</View>
+			)}
 		</SafeAreaView>
 	);
 };
@@ -55,6 +83,10 @@ const styles = StyleSheet.create({
 	safeArea: {
 		flex: 1,
 		backgroundColor: Colors.light.background
+	},
+	iconWrapper: {
+		flexDirection: "row",
+		gap: 20
 	},
 	headerWrapper: {
 		flexDirection: "row",

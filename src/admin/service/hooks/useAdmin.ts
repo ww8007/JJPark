@@ -49,7 +49,9 @@ const useAdmin = () => {
 		setRefreshing(true);
 		const userList = await getParkList();
 		setParkUserList(userList);
-		setRefreshing(false);
+		setTimeout(() => {
+			setRefreshing(false);
+		}, 1000);
 	};
 
 	// INTERACTION

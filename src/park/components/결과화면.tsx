@@ -1,9 +1,11 @@
-import React from "react";
+import { useState } from "react";
 import {
 	ActivityIndicator,
-	SafeAreaView,
+	Platform,
+	RefreshControl,
 	StatusBar,
 	StyleSheet,
+	TouchableHighlight,
 	View
 } from "react-native";
 import Colors from "../../constants/Colors";
@@ -11,12 +13,17 @@ import CircleBlurSVG from "../../common/ui/CircleBlurSVG";
 import CardGradient from "../../common/ui/CardGradient";
 import BottomFixedButton from "../../common/ui/BottomFixedButton";
 import LeftAndRightItem from "../../common/ui/LeftAndRightItem";
-import { STATUS, updateUser } from "../../user/db/user";
+import { STATUS, getUser, updateUser } from "../../user/db/user";
 import { Text } from "../../common/ui/Text";
 import useAuthContext from "../../auth/hooks/useAuthContext";
 import { FontAwesome } from "@expo/vector-icons";
 import { MD2Colors } from "react-native-paper";
 import { AntDesign } from "@expo/vector-icons";
+import firestore from "@react-native-firebase/firestore";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { ScrollView } from "react-native-gesture-handler";
+
+const db = firestore();
 
 const CIRCLE_COLOR: Record<STATUS, string> = {
 	[STATUS.APPROVED]: MD2Colors.green300,
@@ -30,7 +37,7 @@ interface 결과화면Props {
 }
 
 const 결과화면 = ({ onPrev }: 결과화면Props) => {
-	const { user } = useAuthContext();
+	const { user, setUser } = useAuthContext();
 
 	const onClickCancel = async () => {
 		if (!user) return;
@@ -39,6 +46,17 @@ const 결과화면 = ({ onPrev }: 결과화면Props) => {
 			status: STATUS.NONE
 		});
 		onPrev();
+	};
+
+	const [refreshing, setRefreshing] = useState(false);
+
+	const onRefresh = async () => {
+		setRefreshing(true);
+		const newUserData = await getUser(user?.uid ?? "");
+		setUser(newUserData);
+		setTimeout(() => {
+			setRefreshing(false);
+		}, 1000);
 	};
 
 	const resultContent = (result: STATUS) => {
@@ -81,33 +99,49 @@ const 결과화면 = ({ onPrev }: 결과화면Props) => {
 	return (
 		<SafeAreaView style={styles.safeArea}>
 			<StatusBar barStyle='dark-content' />
-			<View style={styles.contentWrapper}>
+			<View style={styles.headerWrapper}>
+				<Text style={styles.headerText} bold>
+					주차 신청하기
+				</Text>
+				<TouchableHighlight
+					onPress={onRefresh}
+					underlayColor={Colors.light.background}
+				>
+					<FontAwesome name='refresh' size={24} color={Colors.light.grey600} />
+				</TouchableHighlight>
+			</View>
+			<ScrollView
+				contentContainerStyle={styles.contentWrapper}
+				refreshControl={
+					<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+				}
+			>
 				{/** 배경 */}
 				<View style={styles.firstBlurCircle}>
+					<CircleBlurSVG
+						width={200}
+						height={200}
+						circleColor={CIRCLE_COLOR[user?.status ?? STATUS.NONE]}
+					/>
+				</View>
+				<View style={styles.secondBlurCircle}>
 					<CircleBlurSVG
 						width={300}
 						height={300}
 						circleColor={CIRCLE_COLOR[user?.status ?? STATUS.NONE]}
 					/>
 				</View>
-				<View style={styles.secondBlurCircle}>
-					<CircleBlurSVG
-						width={400}
-						height={400}
-						circleColor={CIRCLE_COLOR[user?.status ?? STATUS.NONE]}
-					/>
-				</View>
 				<View style={styles.thirdBlurCircle}>
 					<CircleBlurSVG
-						width={600}
-						height={600}
+						width={500}
+						height={500}
 						circleColor={CIRCLE_COLOR[user?.status ?? STATUS.NONE]}
 					/>
 				</View>
 				{/** 결과 카드 */}
 				<View style={styles.gradientWrapper}>
 					<CardGradient
-						height={45}
+						height={Platform.OS === "android" ? 60 : 60}
 						blurAmount={50}
 						withHeader={{
 							headerColor: CIRCLE_COLOR[user?.status ?? STATUS.NONE],
@@ -118,6 +152,7 @@ const 결과화면 = ({ onPrev }: 결과화면Props) => {
 									? "거절"
 									: "대기중"
 						}}
+						gradientColors='rgba(255, 255, 255, 0.1)'
 					>
 						<View style={styles.gradientContent}>
 							<LeftAndRightItem>
@@ -140,7 +175,7 @@ const 결과화면 = ({ onPrev }: 결과화면Props) => {
 						</View>
 					</CardGradient>
 				</View>
-			</View>
+			</ScrollView>
 			<BottomFixedButton
 				buttonColor={CIRCLE_COLOR[user?.status ?? STATUS.NONE]}
 				onPress={onClickCancel}
@@ -158,6 +193,19 @@ const styles = StyleSheet.create({
 		flex: 1,
 		backgroundColor: Colors.light.background
 	},
+	headerWrapper: {
+		flexDirection: "row",
+		justifyContent: "space-between",
+		paddingLeft: 30,
+		paddingRight: 30,
+		paddingTop: 20,
+		paddingBottom: "10%"
+	},
+	headerText: {
+		fontSize: 24,
+		color: Colors.light.black,
+		textAlign: "center"
+	},
 	contentWrapper: {
 		flex: 1,
 		backgroundColor: Colors.light.background
@@ -165,8 +213,8 @@ const styles = StyleSheet.create({
 
 	firstBlurCircle: {
 		position: "absolute",
-		top: 100,
-		left: -200
+		top: 50,
+		left: -100
 	},
 	secondBlurCircle: {
 		position: "absolute",
@@ -175,19 +223,21 @@ const styles = StyleSheet.create({
 	},
 	thirdBlurCircle: {
 		position: "absolute",
-		top: "50%",
+		top: "90%",
 		left: 0
 	},
 
 	gradientWrapper: {
-		top: "20%",
+		flex: 1,
+		top: "10%",
 		height: "100%",
 		width: "100%"
 	},
 	gradientContent: {
 		display: "flex",
 		gap: 20,
-		padding: 20
+		padding: 20,
+		flex: 1
 	},
 
 	iconTextWrapper: {
