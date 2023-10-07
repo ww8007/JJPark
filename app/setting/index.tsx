@@ -8,8 +8,10 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import auth from "@react-native-firebase/auth";
 import { SafeAreaView } from "react-native-safe-area-context";
+import useAuthContext from "../../src/auth/hooks/useAuthContext";
 
 const index = () => {
+	const { logout } = useAuthContext();
 	const router = useRouter();
 
 	const onClick_내정보수정 = () => {
@@ -24,7 +26,7 @@ const index = () => {
 			},
 			{
 				text: "확인",
-				onPress: () => auth().signOut()
+				onPress: () => logout()
 			}
 		]);
 	};
