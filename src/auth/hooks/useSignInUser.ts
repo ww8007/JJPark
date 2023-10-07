@@ -1,10 +1,15 @@
+import { useRouter } from "expo-router";
 import { useState } from "react";
+import useAuthContext from "./useAuthContext";
 
 const useSignInUser = () => {
-	const [token, setToken] = useState<string>("");
+	const router = useRouter();
+	const { user } = useAuthContext();
 
-	const signInUser = async (token: string) => {
-		setToken(token);
+	const signInUser = async () => {
+		if (!user) router.push("/register");
+		if (!user) return;
+		if (user.carNum && user.role) router.push("/");
 	};
 
 	return { signInUser };

@@ -35,10 +35,8 @@ const useGetAppleAuth = () => {
 		// Sign the user in with the credential
 		return auth()
 			.signInWithCredential(appleCredential)
-			.then(async (res) => {
-				const { user } = res;
-				const token = await user.getIdToken();
-				signInUser(token);
+			.then(async () => {
+				signInUser();
 			})
 			.catch((err) => {
 				analytics().logEvent("apple_sign_in_failed", {

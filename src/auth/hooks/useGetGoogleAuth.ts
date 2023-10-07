@@ -23,10 +23,8 @@ const useGetGoogleAuth = () => {
 		// Sign-in the user with the credential
 		return auth()
 			.signInWithCredential(googleCredential)
-			.then(async (res) => {
-				const { user } = res;
-				const token = await user.getIdToken();
-				signInUser(token);
+			.then(async () => {
+				signInUser();
 				await analytics().logLogin({
 					method: "google"
 				});
