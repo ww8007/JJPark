@@ -5,8 +5,11 @@ import { useCallback, useEffect, useMemo } from "react";
 import useAuthContext from "../src/auth/hooks/useAuthContext";
 import { STATUS } from "../src/user/db/user";
 import useNotification from "../src/notification/hooks/useNotification";
+import Loading from "../src/common/ui/Loading";
+import { useBackHandler } from "../src/common/hooks/useBackHandler";
 
 const index = () => {
+	useBackHandler();
 	const { user } = useAuthContext();
 	const { requestUserPermission } = useNotification();
 
@@ -14,7 +17,7 @@ const index = () => {
 		requestUserPermission();
 	}, []);
 
-	const memoStep = useMemo(() => ["SUBMIT", "RESULT"], []);
+	const memoStep = useMemo(() => ["LOADING", "SUBMIT", "RESULT"], []);
 	const { Funnel, setStep } = useFunnel({
 		step: memoStep
 	});
@@ -28,15 +31,24 @@ const index = () => {
 	}, []);
 
 	useEffect(() => {
-		if (!user) return;
-		if (user.status !== STATUS.NONE) {
-			setStep("RESULT");
+		if (user) {
+			setTimeout(() => {
+				if (user.status === STATUS.NONE) {
+					setStep("SUBMIT");
+				}
+				if (user.status !== STATUS.NONE) {
+					setStep("RESULT");
+				}
+			}, 1000);
 		}
 	}, [user?.status]);
 
 	return (
 		<>
 			<Funnel>
+				<Funnel.Step name='LOADING'>
+					<Loading />
+				</Funnel.Step>
 				<Funnel.Step name='SUBMIT'>
 					<신청화면 onNext={onClickSubmit} />
 				</Funnel.Step>

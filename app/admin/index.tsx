@@ -13,8 +13,10 @@ import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import BlankItem from "../../src/common/ui/BlankItem";
+import { useBackHandler } from "../../src/common/hooks/useBackHandler";
 
 const index = () => {
+	useBackHandler();
 	const { parkUserList, onClickParkItem, refreshing, onRefresh } = useAdmin();
 
 	const router = useRouter();

@@ -19,11 +19,10 @@ import useAuthContext from "../../auth/hooks/useAuthContext";
 import { FontAwesome } from "@expo/vector-icons";
 import { MD2Colors } from "react-native-paper";
 import { AntDesign } from "@expo/vector-icons";
-import firestore from "@react-native-firebase/firestore";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ScrollView } from "react-native-gesture-handler";
-
-const db = firestore();
+import dayjs from "dayjs";
+dayjs.locale("ko");
 
 const CIRCLE_COLOR: Record<STATUS, string> = {
 	[STATUS.APPROVED]: MD2Colors.green300,
@@ -96,6 +95,8 @@ const 결과화면 = ({ onPrev }: 결과화면Props) => {
 		}
 	};
 
+	if (!user) return null;
+
 	return (
 		<SafeAreaView style={styles.safeArea}>
 			<StatusBar barStyle='dark-content' />
@@ -141,7 +142,7 @@ const 결과화면 = ({ onPrev }: 결과화면Props) => {
 				{/** 결과 카드 */}
 				<View style={styles.gradientWrapper}>
 					<CardGradient
-						height={Platform.OS === "android" ? 60 : 60}
+						height={65}
 						blurAmount={50}
 						withHeader={{
 							headerColor: CIRCLE_COLOR[user?.status ?? STATUS.NONE],
@@ -171,6 +172,12 @@ const 결과화면 = ({ onPrev }: 결과화면Props) => {
 								<LeftAndRightItem.Left text='신청시간' />
 								<LeftAndRightItem.Right text={`${user?.time ?? 3} 시간`} />
 							</LeftAndRightItem>
+							<LeftAndRightItem>
+								<LeftAndRightItem.Left text='신청일' />
+								<LeftAndRightItem.Right
+									text={dayjs(dayjs.unix(user?.updatedAt)).format("YYYY/MM/DD")}
+								/>
+							</LeftAndRightItem>
 							{resultContent(user?.status ?? STATUS.NONE)}
 						</View>
 					</CardGradient>
@@ -180,7 +187,7 @@ const 결과화면 = ({ onPrev }: 결과화면Props) => {
 				buttonColor={CIRCLE_COLOR[user?.status ?? STATUS.NONE]}
 				onPress={onClickCancel}
 			>
-				취소하기
+				{user?.status === STATUS.APPROVED ? "다시 신청하기" : "신청 취소하기"}
 			</BottomFixedButton>
 		</SafeAreaView>
 	);

@@ -36,10 +36,7 @@ const register = () => {
 		}
 		auth()
 			.createUserWithEmailAndPassword(email, password)
-			.then(async (res) => {
-				res.user?.getIdToken().then((token) => {
-					signInUser(token);
-				});
+			.then(async () => {
 				router.push("/login");
 				Alert.alert("회원가입이 완료되었습니다.");
 			})

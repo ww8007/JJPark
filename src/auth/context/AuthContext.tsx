@@ -7,7 +7,8 @@ import {
 	useMemo,
 	useReducer
 } from "react";
-import { User, defaultUser, getUser, isAdmin } from "../../user/db/user";
+import { User } from "../../user/db/user";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export type ActionMapType<M extends { [index: string]: any }> = {
 	[Key in keyof M]: M[Key] extends undefined
@@ -20,18 +21,16 @@ export type ActionMapType<M extends { [index: string]: any }> = {
 		  };
 };
 
-export type AuthUserType = User | null;
-
 export type AuthStateType = {
 	isInitialized: boolean;
-	user: AuthUserType;
+	user: User | null;
 };
 
 export type Auth0ContextType = {
 	isInitialized: boolean;
-	user: AuthUserType | null;
+	user: User | null;
 	logout: () => void;
-	setUser: (user: AuthUserType) => void;
+	setUser: (user: User) => void;
 };
 
 enum Types {
@@ -42,10 +41,10 @@ enum Types {
 
 type Payload = {
 	[Types.INITIAL]: {
-		user: AuthUserType;
+		user: User;
 	};
 	[Types.UPDATE]: {
-		user: AuthUserType;
+		user: User;
 	};
 	[Types.LOGOUT]: undefined;
 };
@@ -80,6 +79,35 @@ const reducer = (state: AuthStateType, action: ActionsType) => {
 	return state;
 };
 
+const storeUser = async (user: User) => {
+	try {
+		if (!user.uid) return;
+		const serializedUser = JSON.stringify(user);
+		await AsyncStorage.setItem("userInfo", serializedUser);
+	} catch (error) {
+		console.error("Failed to save user.", error);
+	}
+};
+
+const loadUser = async (): Promise<User | null> => {
+	try {
+		const serializedUser = await AsyncStorage.getItem("userInfo");
+		if (serializedUser === null) return null;
+		return JSON.parse(serializedUser);
+	} catch (error) {
+		console.error("Failed to load user.", error);
+		return null;
+	}
+};
+
+const removeUser = async () => {
+	try {
+		await AsyncStorage.removeItem("userInfo");
+	} catch (error) {
+		console.error("Failed to remove user.", error);
+	}
+};
+
 export const AuthContext = createContext<Auth0ContextType | null>(null);
 
 type AuthProviderProps = {
@@ -91,39 +119,25 @@ export function AuthProvider({ children }: AuthProviderProps) {
 	const [state, dispatch] = useReducer(reducer, initialState);
 
 	useEffect(() => {
-		auth().onAuthStateChanged(async (user) => {
-			if (!user) {
-				router.push("/login");
-			}
+		(async () => {
+			const storedUser = await loadUser();
+			console.log("storedUser", storedUser);
+			if (storedUser) {
+				dispatch({
+					type: Types.INITIAL,
+					payload: { user: storedUser }
+				});
 
-			if (user) {
-				const isAdminUser = await isAdmin(user.uid);
-				if (isAdminUser) {
-					dispatch({
-						type: Types.INITIAL,
-						payload: {
-							user: { ...defaultUser, uid: user.uid }
-						}
-					});
+				if (storedUser.level === "ADMIN") {
 					router.push("/admin");
 					return;
 				}
-
-				const userInDB = await getUser(user.uid);
-				dispatch({
-					type: Types.INITIAL,
-					payload: {
-						user: userInDB
-					}
-				});
-				if (!userInDB) {
-					router.push("/register");
-				} else {
-					router.push("/");
-				}
+				setUser(storedUser);
+			} else {
+				router.push("/login");
 			}
-		});
-	}, [auth().currentUser]);
+		})();
+	}, []);
 
 	// LOGOUT
 	const logout = useCallback(() => {
@@ -131,18 +145,19 @@ export function AuthProvider({ children }: AuthProviderProps) {
 		dispatch({
 			type: Types.LOGOUT
 		});
+		removeUser();
+		router.push("/login");
 	}, []);
 
 	// SET USER
 	const setUser = useCallback(
-		(newUser: AuthUserType) => {
+		(newUser: User) => {
 			if (!deepEqual(state.user as TestObject, newUser as TestObject)) {
 				dispatch({
 					type: Types.UPDATE,
-					payload: {
-						user: newUser
-					}
+					payload: { user: newUser }
 				});
+				storeUser(newUser); // 여기에서 AsyncStorage 업데이트
 			}
 		},
 		[state.user]

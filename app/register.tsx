@@ -65,7 +65,8 @@ const register = () => {
 			status: STATUS.NONE,
 			fcmToken: "",
 			time: 0,
-			role: registerInfo.role
+			role: registerInfo.role,
+			level: "USER"
 		});
 		setUser(user);
 

@@ -47,16 +47,10 @@ const login = () => {
 		auth()
 			.signInWithEmailAndPassword(email, password)
 			.then(async (res) => {
-				res.user?.getIdToken().then((token) => {
-					signInUser(token);
+				res.user?.getIdToken().then(() => {
+					signInUser();
 				});
 				initialize();
-				const user = await getUser(auth().currentUser?.uid ?? "");
-				if (user.uid) {
-					router.push("/");
-					return;
-				}
-				router.push("/register");
 			})
 			.catch((error) => {
 				if (error.code === "auth/user-not-found") {

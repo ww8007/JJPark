@@ -14,6 +14,11 @@ import LeftAndRightItem from "../../common/ui/LeftAndRightItem";
 import useAuthContext from "../../auth/hooks/useAuthContext";
 import { sendToAdmin } from "../../notification/db/notification";
 import dayjs from "dayjs";
+import "dayjs/locale/ko";
+import relativeTime from "dayjs/plugin/relativeTime";
+
+dayjs.locale("ko");
+dayjs.extend(relativeTime);
 
 interface 신청화면Props {
 	onNext: () => void;
