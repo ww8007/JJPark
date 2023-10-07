@@ -24,7 +24,7 @@ export const navigationRef = createNavigationContainerRef<NavigationParams>();
 
 export const unstable_settings = {
 	// Ensure that reloading on `/modal` keeps a back button present.
-	initialRouteName: "/login"
+	initialRouteName: "/index"
 };
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -35,7 +35,9 @@ export default function RootLayout() {
 
 	useEffect(() => {
 		if (loaded) {
-			SplashScreen.hideAsync();
+			setTimeout(() => {
+				SplashScreen.hideAsync();
+			}, 1000);
 		}
 	}, [loaded]);
 
@@ -53,6 +55,7 @@ function RootLayoutNav() {
 		<AuthProvider>
 			<ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
 				<Stack screenOptions={{ headerShown: false }}>
+					<Stack.Screen name='index' options={{ headerShown: false }} />
 					<Stack.Screen name='login' options={{ headerShown: false }} />
 					<Stack.Screen name='email' options={{ animation: "flip" }} />
 					<Stack.Screen name='register' options={{ animation: "flip" }} />
