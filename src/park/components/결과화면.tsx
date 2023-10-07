@@ -142,7 +142,7 @@ const 결과화면 = ({ onPrev }: 결과화면Props) => {
 				{/** 결과 카드 */}
 				<View style={styles.gradientWrapper}>
 					<CardGradient
-						height={Platform.OS === "android" ? 65 : 60}
+						height={65}
 						blurAmount={50}
 						withHeader={{
 							headerColor: CIRCLE_COLOR[user?.status ?? STATUS.NONE],
