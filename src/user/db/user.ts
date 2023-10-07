@@ -24,6 +24,7 @@ export interface User {
 	fcmToken: string;
 	time: 0 | 3 | 5;
 	role: string;
+	level: "ADMIN" | "USER";
 }
 
 export interface Admin {
@@ -39,7 +40,8 @@ export const defaultUser: User = {
 	status: STATUS.NONE,
 	fcmToken: "",
 	time: 3,
-	role: "무소속"
+	role: "무소속",
+	level: "USER"
 };
 
 export const addUser = async (user: User) => {

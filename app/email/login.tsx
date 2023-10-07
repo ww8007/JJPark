@@ -51,12 +51,6 @@ const login = () => {
 					signInUser();
 				});
 				initialize();
-				const user = await getUser(auth().currentUser?.uid ?? "");
-				if (user.uid) {
-					router.push("/");
-					return;
-				}
-				router.push("/register");
 			})
 			.catch((error) => {
 				if (error.code === "auth/user-not-found") {
