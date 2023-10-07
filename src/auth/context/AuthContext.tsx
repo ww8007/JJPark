@@ -7,7 +7,7 @@ import {
 	useMemo,
 	useReducer
 } from "react";
-import { User, defaultUser, getUser, isAdmin } from "../../user/db/user";
+import { User } from "../../user/db/user";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export type ActionMapType<M extends { [index: string]: any }> = {
@@ -83,7 +83,7 @@ const storeUser = async (user: User) => {
 	try {
 		if (!user.uid) return;
 		const serializedUser = JSON.stringify(user);
-		await AsyncStorage.setItem("user", serializedUser);
+		await AsyncStorage.setItem("userInfo", serializedUser);
 	} catch (error) {
 		console.error("Failed to save user.", error);
 	}
@@ -91,7 +91,7 @@ const storeUser = async (user: User) => {
 
 const loadUser = async (): Promise<User | null> => {
 	try {
-		const serializedUser = await AsyncStorage.getItem("user");
+		const serializedUser = await AsyncStorage.getItem("userInfo");
 		if (serializedUser === null) return null;
 		return JSON.parse(serializedUser);
 	} catch (error) {
@@ -102,7 +102,7 @@ const loadUser = async (): Promise<User | null> => {
 
 const removeUser = async () => {
 	try {
-		await AsyncStorage.removeItem("user");
+		await AsyncStorage.removeItem("userInfo");
 	} catch (error) {
 		console.error("Failed to remove user.", error);
 	}
@@ -121,11 +121,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
 	useEffect(() => {
 		(async () => {
 			const storedUser = await loadUser();
+			console.log("storedUser", storedUser);
 			if (storedUser) {
 				dispatch({
 					type: Types.INITIAL,
 					payload: { user: storedUser }
 				});
+
+				if (storedUser.level === "ADMIN") {
+					router.push("/admin");
+					return;
+				}
+				setUser(storedUser);
 			} else {
 				router.push("/login");
 			}
