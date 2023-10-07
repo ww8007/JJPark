@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Text } from "../src/common/ui/Text";
 import Header from "../src/common/ui/Header";
@@ -17,14 +17,20 @@ import { STATUS, addUser } from "../src/user/db/user";
 import dayjs from "dayjs";
 import { useRouter } from "expo-router";
 import useAuthContext from "../src/auth/hooks/useAuthContext";
+import useUserStore from "../src/auth/store/user";
 
 const register = () => {
 	const { setUser } = useAuthContext();
+	const { name } = useUserStore();
 	const [registerInfo, setRegisterInfo] = useState({
 		name: "",
 		carNum: "",
 		role: ""
 	});
+
+	useEffect(() => {
+		if (name) setRegisterInfo({ ...registerInfo, name });
+	}, [name]);
 
 	const onChangeName = (text: string) => {
 		setRegisterInfo({ ...registerInfo, name: text });
