@@ -4,6 +4,7 @@ const Colors = {
 		background: "#ffffff",
 		primary: "#5D5FEF",
 		lightPrimary: "#7678E1",
+		splash: "#5B5DC4",
 		pastelBlue: "#A7A7FF",
 		white: "#ffffff",
 		black: "#161617",
